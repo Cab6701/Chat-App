@@ -5,9 +5,9 @@ const crypto = require('crypto');
 
 require('dotenv').config();
 
-const api_key = process.env.STREAM_API_KEY;
-const api_secret = process.env.STREAM_API_SECRET;
-const app_id = process.env.STREAM_APP_ID;
+const api_key = "v2nnk85w3hu7";
+const api_secret = "zx594es9ss67bb853rsxpeyycus9bbfgdns3wzht5n8egmp9z69w6ksccmazsqrj";
+const app_id = "1240791";
 
 
 const signup = async (req, res) => {
@@ -18,11 +18,12 @@ const signup = async (req, res) => {
 
         const serverClient = connect(api_key, api_secret, app_id);
 
-        const hasedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const token = serverClient.createUserToken(userId);
 
-        res.status(200).json({token, fullName, username, userId, hasedPassword, phoneNumber});
+        console.log(serverClient + "  VA  " + token);
+        res.status(200).json({token, fullName, username, userId, hashedPassword, phoneNumber});
 
 
     } catch (error) {
