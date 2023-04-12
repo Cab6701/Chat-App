@@ -22,7 +22,6 @@ const signup = async (req, res) => {
 
         const token = serverClient.createUserToken(userId);
 
-        console.log(serverClient + "  VA  " + token);
         res.status(200).json({token, fullName, username, userId, hashedPassword, phoneNumber});
 
 
@@ -58,7 +57,7 @@ const login = async (req, res) => {
         
     } catch (error) {
         console.log(error);
-
+        
         res.status(500).json({ message: error });
     }
 };
