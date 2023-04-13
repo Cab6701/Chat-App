@@ -2,13 +2,13 @@ const { connect } = require('getstream');
 const bcrypt = require('bcrypt');
 const StreamChat = require('stream-chat').StreamChat;
 const crypto = require('crypto');
+const { log } = require('console');
 
 require('dotenv').config();
 
-const api_key = "v2nnk85w3hu7";
-const api_secret = "zx594es9ss67bb853rsxpeyycus9bbfgdns3wzht5n8egmp9z69w6ksccmazsqrj";
-const app_id = "1240791";
-
+const api_key = process.env.STREAM_API_KEY;
+const api_secret = process.env.STREAM_API_SECRET;
+const app_id = process.env.STREAM_APP_ID;
 
 const signup = async (req, res) => {
     try {
@@ -22,9 +22,7 @@ const signup = async (req, res) => {
 
         const token = serverClient.createUserToken(userId);
 
-        res.status(200).json({token, fullName, username, userId, hashedPassword, phoneNumber});
-
-
+        res.status(200).json({ token, fullName, username, userId, hashedPassword, phoneNumber });
     } catch (error) {
         console.log(error);
 
@@ -32,34 +30,30 @@ const signup = async (req, res) => {
     }
 };
 
-
 const login = async (req, res) => {
     try {
-        const {username, password} = req.body;
+        const { username, password } = req.body;
 
         const serverClient = connect(api_key, api_secret, app_id);
         const client = StreamChat.getInstance(api_key, api_secret);
 
-        const {users} = await client.queryUsers({name:username});
+        const { users } = await client.queryUsers({ name: username });
 
-        if(!users.length) return res.status(400).json({message:'User not found'});
+        if (!users.length) return res.status(400).json({ message: 'User not found' });
 
-        const success = await bcrypt.compare(password, users[0].hasedPassword);
+        const success = await bcrypt.compare(password, users[0].hashedPassword);
 
         const token = serverClient.createUserToken(users[0].id);
 
         if (success) {
-            res.status(200).json({token, fullName: users[0].fullName, username, userId:users[0].id});
+            res.status(200).json({ token, fullName: users[0].fullName, username, userId: users[0].id });
+        } else {
+            res.status(500).json({ message: 'Incorrect password' });
         }
-        else{
-            res.status(500).json({message:'Incorrect password'});
-        }
-        
     } catch (error) {
         console.log(error);
-        
         res.status(500).json({ message: error });
     }
 };
 
-module.exports = { signup, login };
+module.exports = { signup, login }
